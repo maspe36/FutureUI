@@ -1,6 +1,6 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPainter, QPen, QBrush, QColor
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtGui import QPen, QBrush, QColor
+from PyQt5.QtWidgets import QWidget, QGraphicsView, QGraphicsScene
 
 RED = 255
 GREEN = 200
@@ -14,29 +14,34 @@ OFFSET = 0
 COLOR = QColor(RED, GREEN, BLUE, ALPHA)
 
 
-class Node(QWidget):
+class Node(QGraphicsView):
     def __init__(self, arcs=None, parent=None):
         super().__init__(parent)
         self.parent = parent
         self.arcs = arcs
+        self.setScene(QGraphicsScene(parent))
 
         if arcs is None:
             self.arcs = []
 
-    def paintEvent(self, QPaintEvent):
-        """
-        Draw all arc primitives
-        """
+    def addArc(self, arc):
+        self.arcs.append(arc)
+        self.scene().addItem(arc)
 
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
+    def addArcs(self, arcs):
+        for arc in arcs:
+            self.addArc(arc)
 
-        for arc in self.arcs:
-            pen = QPen(QBrush(arc.color), arc.thickness)
-            painter.setPen(pen)
-
-            boundingBox, startAngle, spanAngle = arc.getDrawingVariables(self)
-            painter.drawArc(boundingBox, startAngle, spanAngle)
+    # def paintEvent(self, QPaintEvent):
+    #     painter = QPainter(self)
+    #     painter.setRenderHint(QPainter.Antialiasing)
+    #
+    #     for arc in self.arcs:
+    #         pen = QPen(QBrush(arc.color), arc.thickness)
+    #         painter.setPen(pen)
+    #
+    #         boundingBox, startAngle, spanAngle = arc.getDrawingVariables(self)
+    #         painter.drawArc(boundingBox, startAngle, spanAngle)
 
     def drawArcAndSelfCenter(self, boundingBox, painter):
         painter.setPen(QPen(QBrush(Qt.blue), 1))
