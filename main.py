@@ -14,7 +14,7 @@ if __name__ == "__main__":
     arcs = [Arc(color=Qt.black), Arc(rotation=180, offset=10, color=Qt.red), Arc(angle=45, offset=-10)]
     node = Node(parent=view, arcs=arcs)
 
-    view.setFixedSize(QSize(1000,1000))
+    view.setFixedSize(QSize(800, 480))
     view.setCentralWidget(node)
     view.show()
 
