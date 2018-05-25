@@ -1,5 +1,5 @@
 from PyQt5.QtCore import QRectF
-from PyQt5.QtGui import QColor, QPen, QBrush
+from PyQt5.QtGui import QColor, QPen, QBrush, QPainter
 
 from widgets.graphics.QGraphicsArcItem import QGraphicsArcItem
 
@@ -17,7 +17,7 @@ COLOR = QColor(RED, GREEN, BLUE, ALPHA)
 
 
 class Arc(QGraphicsArcItem):
-    def __init__(self, parent, angle=ANGLE, thickness=THICKNESS, rotation=ROTATION, offset=OFFSET, diameter=DIAMETER, color=COLOR):
+    def __init__(self, parent=None, angle=ANGLE, thickness=THICKNESS, rotation=ROTATION, offset=OFFSET, diameter=DIAMETER, color=COLOR):
         super().__init__()
         self.parent = parent
         self.angle = angle
@@ -27,8 +27,6 @@ class Arc(QGraphicsArcItem):
         self.diameter = diameter - offset
         self.radius = round(self.diameter / 2)
         self.color = color
-
-        self.updateGeometry()
 
     def updateGeometry(self):
         self.setStartAngle(self.calculateStartAngle())
@@ -58,6 +56,7 @@ class Arc(QGraphicsArcItem):
 
         return boundingBox
 
-    def paint(self, QPainter, QStyleOptionGraphicsItem, widget=None):
-        QPainter.setPen(QPen(QBrush(self.color), self.thickness))
-        QPainter.drawArc(self.rect(), self.startAngle(), self.spanAngle())
+    def paint(self, painter, QStyleOptionGraphicsItem, widget=None):
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setPen(QPen(QBrush(self.color), self.thickness))
+        painter.drawArc(self.rect(), self.startAngle(), self.spanAngle())

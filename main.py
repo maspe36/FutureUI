@@ -11,14 +11,11 @@ if __name__ == "__main__":
 
     main = QMainWindow()
 
+    arcs = [Arc(color=Qt.black),
+            Arc(rotation=180, offset=10, color=Qt.red),
+            Arc(angle=45, offset=-10, color=Qt.blue)]
 
     node = Node()
-    view = QGraphicsView()
-
-    arcs = [Arc(parent=node, color=Qt.black),
-            Arc(parent=node, rotation=180, offset=10, color=Qt.red),
-            Arc(parent=node, angle=45, offset=-10, color=Qt.blue)]
-
     node.addArcs(arcs)
 
     # main.setFixedSize(QSize(800, 480))
