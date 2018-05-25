@@ -1,7 +1,10 @@
-from PyQt5.QtCore import QRectF
+from PyQt5.QtCore import QRectF, QPropertyAnimation
 from PyQt5.QtGui import QColor, QPen, QBrush, QPainter
+from PyQt5.QtWidgets import QWidget
 
 from widgets.graphics.QGraphicsArcItem import QGraphicsArcItem
+
+ANIMATION_ITERATIONS = -1
 
 RED = 255
 GREEN = 200
@@ -28,10 +31,31 @@ class Arc(QGraphicsArcItem):
         self.radius = round(self.diameter / 2)
         self.color = color
 
+    def boundingRect(self):
+        return self._rect
+
+    def paint(self, painter, QStyleOptionGraphicsItem, widget=None):
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setPen(QPen(QBrush(self.color), self.thickness))
+        painter.drawArc(self.rect, self.startAngle, self.spanAngle)
+
+    def runAnimation(self):
+        self.animation = QPropertyAnimation(self, b"startAngle")
+
+        self.animation.setDuration(1000)
+        self.animation.setStartValue(self.startAngle)
+        self.animation.setEndValue(360 * 16 + self.startAngle)
+        self.animation.setLoopCount(ANIMATION_ITERATIONS)
+
+        self.animation.start()
+
     def updateGeometry(self):
-        self.setStartAngle(self.calculateStartAngle())
-        self.setSpanAngle(self.calculateSpanAngle())
-        self.setRect(self.calculateRect())
+        self.updateAngles()
+        self.rect = self.calculateRect()
+
+    def updateAngles(self):
+        self.startAngle = self.calculateStartAngle()
+        self.spanAngle = self.calculateSpanAngle()
 
     def calculateStartAngle(self):
         return (90 * 16) + (self.rotation * 16)
@@ -55,8 +79,3 @@ class Arc(QGraphicsArcItem):
         boundingBox.setHeight(height)
 
         return boundingBox
-
-    def paint(self, painter, QStyleOptionGraphicsItem, widget=None):
-        painter.setRenderHint(QPainter.Antialiasing)
-        painter.setPen(QPen(QBrush(self.color), self.thickness))
-        painter.drawArc(self.rect(), self.startAngle(), self.spanAngle())

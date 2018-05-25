@@ -20,6 +20,7 @@ class Node(QGraphicsView):
         arc.updateGeometry()
         self.arcs.append(arc)
         self.scene().addItem(arc)
+        arc.runAnimation()
 
     def addArcs(self, arcs):
         for arc in arcs:
