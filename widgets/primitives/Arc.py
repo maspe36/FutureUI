@@ -1,3 +1,5 @@
+from random import randint
+
 from PyQt5.QtCore import QRectF, QPropertyAnimation
 from PyQt5.QtGui import QColor, QPen, QBrush, QPainter
 from PyQt5.QtWidgets import QWidget
@@ -42,12 +44,15 @@ class Arc(QGraphicsArcItem):
     def runAnimation(self):
         self.animation = QPropertyAnimation(self, b"startAngle")
 
-        self.animation.setDuration(1000)
+        duration = randint(1000, 3000)
+
+        self.animation.setDuration(duration)
         self.animation.setStartValue(self.startAngle)
         self.animation.setEndValue(360 * 16 + self.startAngle)
         self.animation.setLoopCount(ANIMATION_ITERATIONS)
 
         self.animation.start()
+        self.animation.valueChanged.connect(self.update)
 
     def updateGeometry(self):
         self.updateAngles()
