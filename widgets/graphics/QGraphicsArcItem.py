@@ -6,20 +6,29 @@ class QGraphicsArcItem(QGraphicsObject):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.parent = parent
-        self._rect = QRectF()
+        self._drawingRect = QRectF()
+        self._renderRect = QRectF
         self._startAngle = 0
         self._spanAngle = 0
 
     def boundingRect(self):
-        return self._rect
+        return self._renderRect
 
     @pyqtProperty(QRectF)
-    def rect(self):
-        return self._rect
+    def drawingRect(self):
+        return self._drawingRect
 
-    @rect.setter
-    def rect(self, value):
-        self._rect = value
+    @drawingRect.setter
+    def drawingRect(self, value):
+        self._drawingRect = value
+
+    @pyqtProperty(QRectF)
+    def renderRect(self):
+        return self._renderRect
+
+    @renderRect.setter
+    def renderRect(self, value):
+        self._renderRect = value
 
     @pyqtProperty(float)
     def startAngle(self):

@@ -11,14 +11,17 @@ if __name__ == "__main__":
 
     main = QMainWindow()
 
-    arcs = [Arc(color=Qt.black),
-            Arc(rotation=180, offset=10, color=Qt.red),
-            Arc(angle=45, offset=-10, color=Qt.blue)]
+    arcs = [Arc(thickness=30),
+            Arc(angle=45, offset=26, color=Qt.red),
+            Arc(angle=60, offset=16, color=Qt.cyan),
+            Arc(angle=80, offset=6, color=Qt.magenta),
+            Arc(angle=100, offset=-4, color=Qt.black),
+            Arc(angle=45, offset=-14, color=Qt.green),
+            Arc(angle=45, offset=-24, color=Qt.blue)]
 
     node = Node()
     node.addArcs(arcs)
 
-    # main.setFixedSize(QSize(800, 480))
     main.setCentralWidget(node)
     main.show()
 

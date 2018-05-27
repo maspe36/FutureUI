@@ -1,15 +1,14 @@
 from random import randint
 
-from PyQt5.QtCore import QRectF, QPropertyAnimation
+from PyQt5.QtCore import QRectF, QPropertyAnimation, Qt
 from PyQt5.QtGui import QColor, QPen, QBrush, QPainter
-from PyQt5.QtWidgets import QWidget
 
 from widgets.graphics.QGraphicsArcItem import QGraphicsArcItem
 
 ANIMATION_ITERATIONS = -1
 
 RED = 255
-GREEN = 200
+GREEN = 220
 BLUE = 61
 ALPHA = 200
 
@@ -33,13 +32,13 @@ class Arc(QGraphicsArcItem):
         self.radius = round(self.diameter / 2)
         self.color = color
 
-    def boundingRect(self):
-        return self._rect
-
     def paint(self, painter, QStyleOptionGraphicsItem, widget=None):
+        pen = QPen(QBrush(self.color), self.thickness)
+        pen.setCapStyle(Qt.FlatCap)
+
         painter.setRenderHint(QPainter.Antialiasing)
-        painter.setPen(QPen(QBrush(self.color), self.thickness))
-        painter.drawArc(self.rect, self.startAngle, self.spanAngle)
+        painter.setPen(pen)
+        painter.drawArc(self.drawingRect, self.startAngle, self.spanAngle)
 
     def runAnimation(self):
         self.animation = QPropertyAnimation(self, b"startAngle")
@@ -56,7 +55,8 @@ class Arc(QGraphicsArcItem):
 
     def updateGeometry(self):
         self.updateAngles()
-        self.rect = self.calculateRect()
+        self.drawingRect = self.calculateDrawingRect()
+        self.renderRect = self.calculateRenderRect()
 
     def updateAngles(self):
         self.startAngle = self.calculateStartAngle()
@@ -68,14 +68,18 @@ class Arc(QGraphicsArcItem):
     def calculateSpanAngle(self):
         return -self.angle * 16
 
-    def calculateRect(self):
+    def calculateDrawingRect(self):
+        """
+        Calculate the size of the rect we will use to draw the arc
+        """
+
         # X and Y are top left
-        x = self.parent.rect().center().x() - self.radius + self.thickness
-        y = self.parent.rect().center().y() - self.radius + self.thickness
+        x = self.parent.rect().center().x() - self.radius
+        y = self.parent.rect().center().y() - self.radius
 
         # Size from the X and Y origin in the top left
-        width = self.diameter - self.thickness
-        height = self.diameter - self.thickness
+        width = self.diameter
+        height = self.diameter
 
         boundingBox = QRectF()
         boundingBox.setX(x)
@@ -84,3 +88,17 @@ class Arc(QGraphicsArcItem):
         boundingBox.setHeight(height)
 
         return boundingBox
+
+    def calculateRenderRect(self):
+        """
+        Calculate the size of the QGraphicsItem itself
+        """
+
+        rect = self.calculateDrawingRect()
+
+        rect.setX(rect.x() - self.thickness)
+        rect.setY(rect.y() - self.thickness)
+        rect.setWidth(rect.width() + self.thickness)
+        rect.setHeight(rect.height() + self.thickness)
+
+        return rect
