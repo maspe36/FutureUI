@@ -17,11 +17,14 @@ ANGLE = 180
 ROTATION = 0
 OFFSET = 0
 DIAMETER = 200
+CIRCLE_DURATION = randint(800, 1000)
+EXTEND_DURATION = randint(800, 1000)
+SHRINK_DURATION = randint(800, 1000)
 COLOR = QColor(RED, GREEN, BLUE, ALPHA)
 
 
 class Arc(QGraphicsArcItem):
-    def __init__(self, parent=None, angle=ANGLE, thickness=THICKNESS, rotation=ROTATION, offset=OFFSET, diameter=DIAMETER, color=COLOR):
+    def __init__(self, parent=None, angle=ANGLE, thickness=THICKNESS, rotation=ROTATION, offset=OFFSET, diameter=DIAMETER, circleDuration=None, expandDuration=None, shrinkDuration=None, color=COLOR):
         super().__init__()
         self.parent = parent
         self.angle = angle
@@ -30,6 +33,19 @@ class Arc(QGraphicsArcItem):
         self.offset = offset
         self.diameter = diameter - offset
         self.radius = round(self.diameter / 2)
+
+        if not circleDuration:
+            circleDuration = randint(1000, 3000)
+
+        if not expandDuration:
+            expandDuration = randint(1000, 3000)
+
+        if not shrinkDuration:
+            shrinkDuration = randint(1000, 3000)
+
+        self.circleDuration = circleDuration
+        self.expandDuration = expandDuration
+        self.shrinkDuration = shrinkDuration
         self.color = color
 
     def paint(self, painter, QStyleOptionGraphicsItem, widget=None):
@@ -41,17 +57,36 @@ class Arc(QGraphicsArcItem):
         painter.drawArc(self.drawingRect, self.startAngle, self.spanAngle)
 
     def runAnimation(self):
-        self.animation = QPropertyAnimation(self, b"startAngle")
+        self.runCircleAnimation()
+        self.runLengthAnimation()
 
-        duration = randint(1000, 3000)
+    def runCircleAnimation(self):
+        end = 360 * 16 + self.startAngle
+        self.circleAnimation = self.createAnimation(property=b"startAngle", start=self.startAngle, end=end)
 
-        self.animation.setDuration(duration)
-        self.animation.setStartValue(self.startAngle)
-        self.animation.setEndValue(360 * 16 + self.startAngle)
-        self.animation.setLoopCount(ANIMATION_ITERATIONS)
+        self.circleAnimation.setDuration(self.circleDuration)
+        self.circleAnimation.setLoopCount(ANIMATION_ITERATIONS)
 
-        self.animation.start()
-        self.animation.valueChanged.connect(self.update)
+        self.circleAnimation.start()
+        self.circleAnimation.valueChanged.connect(self.update)
+
+    def runLengthAnimation(self):
+        self.extendingAnimation = self.createAnimation(property=b"spanAngle", start=self.spanAngle, end=self.spanAngle * 2)
+        self.shrinkingAnimation = self.createAnimation(property=b"spanAngle", start=self.spanAngle * 2, end=self.spanAngle)
+
+        self.extendingAnimation.setDuration(self.expandDuration)
+        self.shrinkingAnimation.setDuration(self.shrinkDuration)
+
+        self.extendingAnimation.start()
+        self.extendingAnimation.finished.connect(self.shrinkingAnimation.start)
+        self.shrinkingAnimation.finished.connect(self.extendingAnimation.start)
+
+    def createAnimation(self, property, start, end):
+        animation = QPropertyAnimation(self, property)
+        animation.setStartValue(start)
+        animation.setEndValue(end)
+
+        return animation
 
     def updateGeometry(self):
         self.updateAngles()
