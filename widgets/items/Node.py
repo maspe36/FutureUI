@@ -1,4 +1,7 @@
+from random import randint
+
 from PyQt5.QtCore import QSize
+from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene
 
 class Node(QGraphicsView):
@@ -15,6 +18,16 @@ class Node(QGraphicsView):
 
         self.addArcs(arcs)
         self.setScene(QGraphicsScene(parent))
+
+    def mousePressEvent(self, QMouseEvent):
+        super().mousePressEvent(QMouseEvent)
+
+        for arc in self.arcs:
+            red = randint(0, 255)
+            green = randint(0, 255)
+            blue = randint(0, 255)
+
+            arc.color = QColor(red, green, blue)
 
     def addArc(self, arc):
         if not arc.parent:
