@@ -13,13 +13,10 @@ BLUE = 61
 ALPHA = 200
 
 THICKNESS = 5
-ANGLE = 180
+ANGLE = 170
 ROTATION = 0
 OFFSET = 0
 DIAMETER = 200
-CIRCLE_DURATION = randint(800, 1000)
-EXTEND_DURATION = randint(800, 1000)
-SHRINK_DURATION = randint(800, 1000)
 COLOR = QColor(RED, GREEN, BLUE, ALPHA)
 
 
@@ -56,7 +53,7 @@ class Arc(QGraphicsArcItem):
         painter.setPen(pen)
         painter.drawArc(self.drawingRect, self.startAngle, self.spanAngle)
 
-    def runAnimation(self):
+    def runAnimations(self):
         self.runCircleAnimation()
         self.runLengthAnimation()
 

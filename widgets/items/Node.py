@@ -1,10 +1,10 @@
-from random import randint
-
-from PyQt5.QtCore import QSize
-from PyQt5.QtGui import QColor
+from PyQt5.QtCore import QSize, pyqtSignal
 from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene
 
+
 class Node(QGraphicsView):
+    clicked = pyqtSignal()
+
     def __init__(self, arcs=None, parent=None):
         super().__init__(parent)
 
@@ -21,13 +21,7 @@ class Node(QGraphicsView):
 
     def mousePressEvent(self, QMouseEvent):
         super().mousePressEvent(QMouseEvent)
-
-        for arc in self.arcs:
-            red = randint(0, 255)
-            green = randint(0, 255)
-            blue = randint(0, 255)
-
-            arc.color = QColor(red, green, blue)
+        self.clicked.emit()
 
     def addArc(self, arc):
         if not arc.parent:
@@ -38,7 +32,7 @@ class Node(QGraphicsView):
 
         self.arcs.append(arc)
         self.scene().addItem(arc)
-        arc.runAnimation()
+        arc.runAnimations()
 
     def updateLargestArc(self, arc):
         if not self.largestArc:
