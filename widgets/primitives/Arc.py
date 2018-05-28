@@ -81,6 +81,9 @@ class Arc(QGraphicsArcItem):
         self.extendingAnimation.finished.connect(self.shrinkingAnimation.start)
         self.shrinkingAnimation.finished.connect(self.extendingAnimation.start)
 
+        self.extendingAnimation.valueChanged.connect(self.update)
+        self.shrinkingAnimation.valueChanged.connect(self.update)
+
     def createAnimation(self, property, start, end):
         animation = QPropertyAnimation(self, property)
         animation.setStartValue(start)
